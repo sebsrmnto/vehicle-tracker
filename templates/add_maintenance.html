@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Maintenance Log</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Add Maintenance Log</h1>
+            <p>Record maintenance for {{ vehicle.brand }} {{ vehicle.model }}</p>
+        </div>
+
+        <!-- Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('add_maintenance', vehicle_id=vehicle.id) }}">
+                <div class="form-group">
+                    <label for="maintenance_type">Maintenance Type *</label>
+                    <select 
+                        id="maintenance_type" 
+                        name="maintenance_type" 
+                        required
+                        autofocus
+                    >
+                        <option value="">Select type...</option>
+                        <option value="Oil Change">Oil Change</option>
+                        <option value="Tire Rotation">Tire Rotation</option>
+                        <option value="Brake Service">Brake Service</option>
+                        <option value="Battery Replacement">Battery Replacement</option>
+                        <option value="Engine Repair">Engine Repair</option>
+                        <option value="Transmission Service">Transmission Service</option>
+                        <option value="Inspection">Inspection</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="maintenance_date">Date *</label>
+                    <input 
+                        type="date" 
+                        id="maintenance_date" 
+                        name="maintenance_date" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="cost">Cost ($)</label>
+                    <input 
+                        type="number" 
+                        id="cost" 
+                        name="cost" 
+                        placeholder="e.g., 150.00"
+                        step="0.01"
+                        min="0"
+                    >
+                    <small style="color: #718096; display: block; margin-top: 5px;">Optional - Leave blank if no cost</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        rows="4"
+                        placeholder="Additional notes about the maintenance (optional)"
+                    ></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Maintenance Log</button>
+                    <a href="{{ url_for('view_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
