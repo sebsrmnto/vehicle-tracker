@@ -1,4 +1,4 @@
-# 🚗 Vehicle Maintenance Tracker
+#  Vehicle Maintenance Tracker
 
 A full-stack web application for tracking vehicles and their maintenance records, built with Flask and MySQL.
 
@@ -112,8 +112,8 @@ This project is open source and available for educational purposes.
 
 ## 👨‍💻 Author
 
-Built as a learning project for full-stack web development.
+- Sebastian S. Sarmiento
 
 ---
 
-**Happy Tracking! 🚗✨**
+
