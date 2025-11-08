@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Vehicle</title>
+    <title>AutoLog — Vehicle</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -26,9 +26,10 @@
 
         <!-- Vehicle Detail Card -->
         <div class="vehicle-detail-card">
-            <div class="vehicle-detail-icon">🚙</div>
-            <div class="vehicle-detail-brand">{{ vehicle.brand }}</div>
-            <div style="font-size: 1.2rem; color: #4a5568; margin-bottom: 30px;">{{ vehicle.model }}</div>
+            <div class="vehicle-detail-header">
+                <div class="vehicle-detail-brand">{{ vehicle.brand }}</div>
+                <div class="vehicle-model">{{ vehicle.model }}</div>
+            </div>
             
             <div class="vehicle-detail-info">
                 <div class="vehicle-detail-info-item">
@@ -53,62 +54,52 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
-                <a href="{{ url_for('edit_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-primary">✏️ Edit Vehicle</a>
-                <a href="{{ url_for('add_maintenance', vehicle_id=vehicle.id) }}" class="btn btn-primary">🔧 Add Maintenance</a>
-                <form method="POST" action="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this vehicle?');">
-                    <button type="submit" class="btn btn-danger">🗑️ Delete Vehicle</button>
+            <div class="vehicle-detail-footer">
+                <a href="{{ url_for('edit_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-secondary">Edit Vehicle</a>
+                <a href="{{ url_for('add_maintenance', vehicle_id=vehicle.id) }}" class="btn btn-primary">Add Maintenance</a>
+                <form method="POST" action="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" onsubmit="return confirm('Are you sure you want to delete this vehicle?');">
+                    <button type="submit" class="btn btn-danger">Delete Vehicle</button>
                 </form>
             </div>
 
-            <!-- Maintenance Logs Section -->
-            <div style="margin-top: 50px; border-top: 2px solid #e2e8f0; padding-top: 30px;">
-                <h2 style="margin-bottom: 20px; color: #2d3748;">Maintenance History</h2>
-                
+            <div class="vehicle-detail-history">
+                <h2 class="section-heading">Maintenance History</h2>
+
                 {% if maintenance_logs %}
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="maintenance-list">
                         {% for log in maintenance_logs %}
-                        <div class="maintenance-card" style="background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 15px;">
-                                <div style="flex: 1; min-width: 200px;">
-                                    <div style="font-size: 1.1rem; font-weight: 600; color: #2d3748; margin-bottom: 8px;">
-                                        {{ log.maintenance_type }}
-                                    </div>
-                                    <div style="color: #718096; margin-bottom: 5px;">
-                                        <strong>Date:</strong> {{ log.maintenance_date }}
-                                    </div>
+                        <div class="maintenance-card">
+                            <div class="vehicle-header">
+                                <div class="maintenance-title">{{ log.maintenance_type }}</div>
+                                <div class="maintenance-meta">
+                                    <span><strong>Date:</strong> {{ log.maintenance_date }}</span>
                                     {% if log.cost %}
-                                    <div style="color: #718096; margin-bottom: 5px;">
-                                        <strong>Cost:</strong> ${{ "%.2f"|format(log.cost) }}
-                                    </div>
-                                    {% endif %}
-                                    {% if log.description %}
-                                    <div style="color: #4a5568; margin-top: 10px; padding: 10px; background: white; border-radius: 4px;">
-                                        {{ log.description }}
-                                    </div>
+                                        <span><strong>Cost:</strong> ${{ "%.2f"|format(log.cost) }}</span>
                                     {% endif %}
                                 </div>
-                                <form method="POST" action="{{ url_for('delete_maintenance', maintenance_id=log.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this maintenance log?');">
-                                    <button type="submit" class="btn btn-danger btn-small" style="font-size: 0.9rem; padding: 5px 10px;">Delete</button>
-                                </form>
                             </div>
+                            {% if log.description %}
+                            <div class="maintenance-description">
+                                {{ log.description }}
+                            </div>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('delete_maintenance', maintenance_id=log.id) }}" onsubmit="return confirm('Are you sure you want to delete this maintenance log?');">
+                                <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                            </form>
                         </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div style="text-align: center; padding: 40px; color: #718096;">
-                        <div style="font-size: 3rem; margin-bottom: 15px;">🔧</div>
-                        <h3 style="color: #4a5568; margin-bottom: 10px;">No maintenance records yet</h3>
-                        <p>Start tracking maintenance by adding your first log!</p>
-                        <a href="{{ url_for('add_maintenance', vehicle_id=vehicle.id) }}" class="btn btn-primary" style="margin-top: 20px;">Add First Maintenance Log</a>
+                    <div class="empty-state">
+                        <h3>No maintenance logged yet</h3>
+                        <p>Document the first service to start the history.</p>
+                        <a href="{{ url_for('add_maintenance', vehicle_id=vehicle.id) }}" class="btn btn-primary">Log maintenance</a>
                     </div>
                 {% endif %}
             </div>
 
-            <!-- Back Link -->
-            <div style="margin-top: 30px;">
-                <a href="/" class="btn btn-secondary">← Back to Home</a>
+            <div class="vehicle-detail-footer">
+                <a href="/" class="btn btn-secondary">Back to list</a>
             </div>
         </div>
     </div>

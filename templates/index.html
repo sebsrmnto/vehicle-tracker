@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Tracker</title>
+    <title>AutoLog</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🚗 Vehicle Maintenance Tracker</h1>
-            <p>Manage and track all your vehicles in one place</p>
+            <h1>AutoLog</h1>
+            <p>A calm space to track vehicles and every service milestone.</p>
         </div>
 
         <!-- Alert Messages -->
@@ -27,7 +27,7 @@
 
         <!-- Action Bar: Add Button and Search -->
         <div class="action-bar">
-            <a href="/add_vehicle" class="btn btn-primary">+ Add New Vehicle</a>
+            <a href="/add_vehicle" class="btn btn-primary">Add Vehicle</a>
             
             <!-- Search Form -->
             <form method="GET" action="/" class="search-container">
@@ -43,9 +43,9 @@
 
         <!-- Section Header -->
         <div class="section-header">
-            <h2>Your Vehicles</h2>
+            <h2>Garage</h2>
             {% if vehicles %}
-                <span style="color: #718096;">{{ vehicles|length }} vehicle(s)</span>
+                <span class="section-subtle">{{ vehicles|length }} vehicle{{ vehicles|length > 1 and 's' or '' }}</span>
             {% endif %}
         </div>
 
@@ -54,13 +54,14 @@
             <div class="vehicles-grid">
                 {% for v in vehicles %}
                 <div class="vehicle-card">
-                    <div class="vehicle-icon">🚙</div>
-                    <div class="vehicle-brand">{{ v.brand }}</div>
-                    <div class="vehicle-model">{{ v.model }}</div>
+                    <div class="vehicle-header">
+                        <div class="vehicle-brand">{{ v.brand }}</div>
+                        <div class="vehicle-model">{{ v.model }}</div>
+                    </div>
                     <div class="vehicle-details">
-                        <span><strong>Year:</strong> {{ v.year }}</span>
-                        <span><strong>Plate:</strong> {{ v.plate_number }}</span>
-                        <span><strong>ID:</strong> #{{ v.id }}</span>
+                        <span><strong>Year</strong> {{ v.year }}</span>
+                        <span><strong>Plate</strong> {{ v.plate_number }}</span>
+                        <span><strong>ID</strong> #{{ v.id }}</span>
                     </div>
                     <div class="vehicle-actions">
                         <a href="{{ url_for('view_vehicle', vehicle_id=v.id) }}" class="btn btn-secondary btn-small">View</a>
@@ -74,11 +75,10 @@
             </div>
         {% else %}
             <div class="empty-state">
-                <div class="empty-state-icon">🚗</div>
-                <h3>No vehicles found</h3>
-                <p>{% if search_query %}Try a different search term{% else %}Get started by adding your first vehicle!{% endif %}</p>
+                <h3>No vehicles yet</h3>
+                <p>{% if search_query %}Adjust your search and try again.{% else %}Keep things tidy by logging your first vehicle.{% endif %}</p>
                 {% if not search_query %}
-                    <a href="/add_vehicle" class="btn btn-primary mt-20">Add Your First Vehicle</a>
+                    <a href="/add_vehicle" class="btn btn-primary mt-20">Add a vehicle</a>
                 {% endif %}
             </div>
         {% endif %}
