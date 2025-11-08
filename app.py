@@ -1,8 +1,14 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from db_config import get_db_connection
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'dev-secret-change-me'
+# Use environment variable for secret key, fallback to default for local development
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-change-me-in-production')
 
 @app.route('/')
 def index():
@@ -208,4 +214,8 @@ def delete_maintenance(maintenance_id):
     return redirect(url_for('view_vehicle', vehicle_id=vehicle_id))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use environment variable for debug mode, default to False for production
+    import os
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    port = int(os.getenv('PORT', 5000))
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
