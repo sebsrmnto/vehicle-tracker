@@ -1,6 +1,11 @@
-#  Vehicle Maintenance Tracker
+# 🚗 Vehicle Maintenance Tracker (AutoTrack)
 
-A full-stack web application for tracking vehicles and their maintenance records, built with Flask and MySQL.
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A full-stack web application for tracking vehicles and their maintenance records, built with Flask and MySQL. Deployed on Railway.
 
 ## ✨ Features
 
@@ -14,6 +19,14 @@ A full-stack web application for tracking vehicles and their maintenance records
   - Track maintenance type, date, cost, and description
   - View complete maintenance history per vehicle
   - Delete maintenance records
+
+- **Additional Features**
+  - ✅ Input validation and error handling
+  - ✅ CSV export functionality
+  - ✅ Responsive design
+  - ✅ Client-side form validation
+  - ✅ Search functionality
+  - ✅ Fleet statistics dashboard
 
 ## 🛠️ Tech Stack
 
@@ -82,6 +95,9 @@ vehicle-tracker/
 
 ## 📚 Documentation
 
+- **WORKFLOW_GUIDE.md** ⭐ - **Complete guide for saving work and deploying to Railway**
+- **DAILY_CHECKLIST.md** ⭐ - **Quick daily checklist (print this!)**
+- **RAILWAY_DEPLOYMENT.md** - Railway deployment instructions
 - **GUIDE.md** - Code structure and organization
 - **NOTES.md** - Learning explanations and concepts
 - **HOW_TO_USE.md** - Step-by-step usage guide
@@ -96,11 +112,19 @@ vehicle-tracker/
 
 ## 🎯 Usage
 
-1. **Add a vehicle:** Click "+ Add New Vehicle" on home page
+1. **Add a vehicle:** Click "Add Vehicle" on home page
 2. **View vehicle:** Click "View" button on any vehicle card
-3. **Add maintenance:** On vehicle details page, click "🔧 Add Maintenance"
-4. **Search:** Use the search box on home page
-5. **Edit/Delete:** Use buttons on vehicle cards or details page
+3. **Add maintenance:** On vehicle details page, click "Add Maintenance"
+4. **Search:** Use the search box on home page (searches brand, model, or plate number)
+5. **Export data:** Click "Export CSV" to download all vehicles as CSV
+6. **Edit/Delete:** Use buttons on vehicle cards or details page
+
+## 🔒 Security Features
+
+- ✅ Input validation and sanitization
+- ✅ SQL injection prevention (parameterized queries)
+- ✅ Error handling with user-friendly messages
+- ✅ Environment variable support for sensitive data
 
 ## 🤝 Contributing
 

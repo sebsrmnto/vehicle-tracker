@@ -54,18 +54,90 @@ Continue to Step 2.
 
 You need to create the database tables. Choose one method:
 
-### Option A: Using Railway MySQL Console (Easiest)
-1. Go to your **MySQL service** in Railway
-2. Click **"Data"** or **"Connect"** tab
-3. Open the MySQL console
-4. Copy the contents of `setup_database.sql` from your project
-5. Paste and run it in the console
+### Option A: Using Railway CLI (Recommended - Easiest)
 
-### Option B: Run Setup Script Locally
-1. Get database credentials from Railway MySQL service Variables
-2. Temporarily update `db_config.py` with Railway's credentials
-3. Run: `python setup_database.py`
-4. Restore your local `db_config.py` (or use `.env` file)
+1. **Install Railway CLI** (if not already installed):
+   - Visit: https://docs.railway.app/develop/cli
+   - Or run: `npm i -g @railway/cli` (requires Node.js)
+
+2. **Login to Railway**:
+   ```bash
+   railway login
+   ```
+
+3. **Link to your project**:
+   ```bash
+   railway link
+   ```
+   - Select your workspace
+   - Select your project
+   - Select environment (usually "production")
+   - **Select the "MySQL" service** (not "web") - you need to connect to the database
+
+4. **Connect to MySQL and run the setup script**:
+   ```bash
+   railway connect mysql < setup_database.sql
+   ```
+   
+   Or connect interactively:
+   ```bash
+   railway connect mysql
+   ```
+   Then paste the contents of `setup_database.sql` line by line.
+
+### Option B: Using External MySQL Client (MySQL Workbench, DBeaver, etc.)
+
+1. **Get connection details from Railway**:
+   - Go to your **MySQL service** in Railway
+   - Click **"Variables"** tab
+   - Note these values:
+     - `MYSQLHOST` (hostname)
+     - `MYSQLPORT` (usually 3306)
+     - `MYSQLUSER` (username)
+     - `MYSQLPASSWORD` (password)
+     - `MYSQLDATABASE` (database name)
+
+2. **Connect using MySQL Workbench or another client**:
+   - Host: `MYSQLHOST` value
+   - Port: `MYSQLPORT` value (usually 3306)
+   - Username: `MYSQLUSER` value
+   - Password: `MYSQLPASSWORD` value
+   - Database: `MYSQLDATABASE` value
+
+3. **Run the SQL script**:
+   - Open `setup_database.sql` from your project
+   - Copy all contents
+   - Paste and execute in your MySQL client
+
+### Option C: Using Command Line (if you have MySQL client installed)
+
+1. **Get connection details** from Railway MySQL service Variables tab
+
+2. **Connect from your terminal**:
+   ```bash
+   mysql -h <MYSQLHOST> -P <MYSQLPORT> -u <MYSQLUSER> -p<MYSQLPASSWORD> <MYSQLDATABASE> < setup_database.sql
+   ```
+   
+   Replace the placeholders with actual values from Railway Variables.
+
+### Option D: Run Setup Script Locally (Python)
+
+1. **Get database credentials** from Railway MySQL service Variables tab
+
+2. **Temporarily update `db_config.py`** with Railway's credentials:
+   ```python
+   DB_HOST = "<MYSQLHOST value>"
+   DB_USER = "<MYSQLUSER value>"
+   DB_PASSWORD = "<MYSQLPASSWORD value>"
+   DB_NAME = "<MYSQLDATABASE value>"
+   ```
+
+3. **Run the setup script**:
+   ```bash
+   python setup_database.py
+   ```
+
+4. **Restore your local `db_config.py`** (or use `.env` file for local development)
 
 ---
 

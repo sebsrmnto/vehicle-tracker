@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTrack - Vehicle Maintenance Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0d1117',
+                            border: '#30363d',
+                            text: '#c9d1d9',
+                            muted: '#8b949e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Favicons with cache-busting -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}?v=2">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}?v=2">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon-96x96.png') }}?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}?v=2">
+    <link rel="manifest" href="{{ url_for('webmanifest') }}?v=2">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+    </style>
+</head>
+<body class="bg-[#0d1117] text-[#c9d1d9] min-h-screen">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <!-- Header Navigation -->
+        <header class="mb-20">
+            <nav class="flex items-center justify-between">
+                <div class="text-xl font-semibold text-white">
+                    AutoTrack
+                </div>
+                <div class="flex items-center gap-8">
+                    <a href="/" class="text-[#c9d1d9] hover:text-white transition-colors text-sm font-medium">Home</a>
+                    <a href="/vehicles" class="text-[#c9d1d9] hover:text-white transition-colors text-sm font-medium">Garage</a>
+                    <a href="/add_vehicle" class="text-[#c9d1d9] hover:text-white transition-colors text-sm font-medium">Add Vehicle</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="text-center mb-24">
+            <h1 class="text-6xl font-bold text-white mb-4 tracking-tight">
+                AutoTrack
+            </h1>
+            <p class="text-xl text-[#8b949e] mb-12 max-w-2xl mx-auto">
+                Your Vehicle Maintenance Companion
+            </p>
+            <div class="flex items-center justify-center gap-4">
+                <a href="/vehicles" class="px-6 py-3 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#c9d1d9] transition-colors text-sm">
+                    View Garage
+                </a>
+                <a href="/add_vehicle" class="px-6 py-3 border border-[#30363d] text-white rounded-lg font-medium hover:border-[#c9d1d9] hover:bg-[#161b22] transition-colors text-sm">
+                    Add Vehicle
+                </a>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        {% if total_vehicles > 0 %}
+        <section class="mb-24">
+            <div class="grid grid-cols-3 gap-6">
+                <div class="border border-[#30363d] rounded-lg p-6 bg-[#161b22]">
+                    <div class="text-4xl font-bold text-white mb-2">{{ total_vehicles }}</div>
+                    <div class="text-sm text-[#8b949e] uppercase tracking-wide">Vehicles</div>
+                </div>
+                <div class="border border-[#30363d] rounded-lg p-6 bg-[#161b22]">
+                    <div class="text-4xl font-bold text-white mb-2">{{ total_maintenance }}</div>
+                    <div class="text-sm text-[#8b949e] uppercase tracking-wide">Maintenance Records</div>
+                </div>
+                <div class="border border-[#30363d] rounded-lg p-6 bg-[#161b22]">
+                    <div class="text-4xl font-bold text-white mb-2">${{ "%.2f"|format(total_cost) }}</div>
+                    <div class="text-sm text-[#8b949e] uppercase tracking-wide">Total Spent</div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Why AutoTrack Section -->
+        <section class="max-w-2xl mx-auto">
+            <h2 class="text-2xl font-semibold text-white mb-8 text-center">Why AutoTrack</h2>
+            <div class="space-y-4 text-[#8b949e]">
+                <div class="flex items-start">
+                    <span class="text-[#30363d] mr-4">•</span>
+                    <p>Track all your vehicles and their maintenance history in one centralized location</p>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-[#30363d] mr-4">•</span>
+                    <p>Never miss an oil change or service appointment with comprehensive maintenance logging</p>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-[#30363d] mr-4">•</span>
+                    <p>Monitor maintenance costs per vehicle to better understand your spending patterns</p>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-[#30363d] mr-4">•</span>
+                    <p>Quick search functionality to find vehicles instantly by brand, model, or plate number</p>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-[#30363d] mr-4">•</span>
+                    <p>Export your data to CSV format for backup and record-keeping purposes</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

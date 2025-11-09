@@ -1,24 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoTrack — Add Vehicle</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>AutoTrack - Add Vehicle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0d1117',
+                            border: '#30363d',
+                            text: '#c9d1d9',
+                            muted: '#8b949e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Favicons with cache-busting -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}?v=2">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}?v=2">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon-96x96.png') }}?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}?v=2">
+    <link rel="manifest" href="{{ url_for('webmanifest') }}?v=2">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>Add a Vehicle</h1>
-            <p>Keep your records tidy by logging each vehicle once.</p>
+<body class="bg-[#0d1117] text-[#c9d1d9] min-h-screen">
+    <div class="max-w-2xl mx-auto px-6 py-12">
+        <!-- Header Navigation -->
+        <header class="mb-12">
+            <nav class="flex items-center justify-between">
+                <a href="/" class="text-xl font-semibold text-white">AutoTrack</a>
+                <div class="flex items-center gap-8">
+                    <a href="/" class="text-[#8b949e] hover:text-white transition-colors text-sm font-medium">Home</a>
+                    <a href="/vehicles" class="text-[#8b949e] hover:text-white transition-colors text-sm font-medium">Garage</a>
+                    <a href="/add_vehicle" class="text-white hover:text-white transition-colors text-sm font-medium">Add Vehicle</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-semibold text-white mb-2">Add a Vehicle</h1>
+            <p class="text-[#8b949e]">Keep your records tidy by logging each vehicle once.</p>
         </div>
 
         <!-- Alert Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">
+              <div class="mb-6 p-4 rounded-lg border {% if category == 'success' %}bg-[#0d4a2e] border-[#238636] text-[#56d364]{% else %}bg-[#3d1f1f] border-[#da3633] text-[#f85149]{% endif %}">
                 {{ message }}
               </div>
             {% endfor %}
@@ -26,61 +67,97 @@
         {% endwith %}
 
         <!-- Form -->
-        <div class="form-container">
+        <div class="border border-[#30363d] rounded-lg p-8 bg-[#161b22]">
             <form method="POST" action="{{ url_for('add_vehicle') }}">
-                <div class="form-group">
-                    <label for="brand">Brand *</label>
-                    <input 
-                        type="text" 
-                        id="brand" 
-                        name="brand" 
-                        placeholder="e.g., Toyota, Honda, Ford"
-                        required
-                        autofocus
-                    >
-                </div>
+                <div class="space-y-6">
+                    <div>
+                        <label for="brand" class="block text-sm font-medium text-white mb-2">Brand *</label>
+                        <input 
+                            type="text" 
+                            id="brand" 
+                            name="brand" 
+                            placeholder="e.g., Toyota, Honda, Ford"
+                            value="{{ brand if brand else '' }}"
+                            required
+                            autofocus
+                            maxlength="100"
+                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                        >
+                    </div>
 
-                <div class="form-group">
-                    <label for="model">Model *</label>
-                    <input 
-                        type="text" 
-                        id="model" 
-                        name="model" 
-                        placeholder="e.g., Camry, Civic, F-150"
-                        required
-                    >
-                </div>
+                    <div>
+                        <label for="model" class="block text-sm font-medium text-white mb-2">Model *</label>
+                        <input 
+                            type="text" 
+                            id="model" 
+                            name="model" 
+                            placeholder="e.g., Camry, Civic, F-150"
+                            value="{{ model if model else '' }}"
+                            required
+                            maxlength="100"
+                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                        >
+                    </div>
 
-                <div class="form-group">
-                    <label for="year">Year *</label>
-                    <input 
-                        type="number" 
-                        id="year" 
-                        name="year" 
-                        placeholder="e.g., 2020"
-                        min="1900"
-                        max="2100"
-                        required
-                    >
-                </div>
+                    <div>
+                        <label for="year" class="block text-sm font-medium text-white mb-2">Year *</label>
+                        <input 
+                            type="number" 
+                            id="year" 
+                            name="year" 
+                            placeholder="e.g., 2020"
+                            value="{{ year if year else '' }}"
+                            min="1900"
+                            max="2100"
+                            required
+                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                        >
+                    </div>
 
-                <div class="form-group">
-                    <label for="plate">Plate Number *</label>
-                    <input 
-                        type="text" 
-                        id="plate" 
-                        name="plate" 
-                        placeholder="e.g., ABC-1234"
-                        required
-                    >
-                </div>
+                    <div>
+                        <label for="plate" class="block text-sm font-medium text-white mb-2">Plate Number *</label>
+                        <input 
+                            type="text" 
+                            id="plate" 
+                            name="plate" 
+                            placeholder="e.g., ABC-1234"
+                            value="{{ plate if plate else '' }}"
+                            required
+                            maxlength="50"
+                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                        >
+                    </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Save Vehicle</button>
-                    <a href="/" class="btn btn-secondary">Cancel</a>
+                    <div class="flex items-center gap-4 pt-4">
+                        <button type="submit" class="px-6 py-2 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#c9d1d9] transition-colors text-sm" id="submitBtn">
+                            Save Vehicle
+                        </button>
+                        <a href="/vehicles" class="px-6 py-2 border border-[#30363d] text-white rounded-lg font-medium hover:border-[#c9d1d9] hover:bg-[#161b22] transition-colors text-sm">
+                            Cancel
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
+    <script>
+        // Form validation and loading indicator
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const brand = document.getElementById('brand').value.trim();
+            const model = document.getElementById('model').value.trim();
+            const year = document.getElementById('year').value.trim();
+            const plate = document.getElementById('plate').value.trim();
+            
+            // Basic client-side validation
+            if (!brand || !model || !year || !plate) {
+                return; // Let HTML5 validation handle it
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+        });
+    </script>
 </body>
 </html>
