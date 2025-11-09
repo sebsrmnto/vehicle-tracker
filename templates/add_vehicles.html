@@ -30,29 +30,50 @@
     <link rel="manifest" href="{{ url_for('webmanifest') }}?v=2">
     <style>
         body {
-            background-color: #0d1117;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            background-attachment: fixed;
             color: #c9d1d9;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body > * {
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
 <body class="bg-[#0d1117] text-[#c9d1d9] min-h-screen">
-    <div class="max-w-2xl mx-auto px-6 py-12">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
         <!-- Header Navigation -->
-        <header class="mb-12">
-            <nav class="flex items-center justify-between">
-                <a href="/" class="text-xl font-semibold text-white">AutoTrack</a>
-                <div class="flex items-center gap-8">
-                    <a href="/" class="text-[#8b949e] hover:text-white transition-colors text-sm font-medium">Home</a>
-                    <a href="/vehicles" class="text-[#8b949e] hover:text-white transition-colors text-sm font-medium">Garage</a>
-                    <a href="/add_vehicle" class="text-white hover:text-white transition-colors text-sm font-medium">Add Vehicle</a>
+        <header class="mb-8 sm:mb-12">
+            <nav class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <a href="/dashboard" class="text-lg sm:text-xl font-semibold text-white">AutoTrack</a>
+                <div class="flex flex-wrap items-center gap-3 sm:gap-6 text-sm sm:text-base">
+                    <a href="/" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Home</a>
+                    <a href="/dashboard" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Dashboard</a>
+                    <a href="/vehicles" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Garage</a>
+                    <a href="/add_vehicle" class="text-white hover:text-white transition-colors font-medium px-2 py-1">Add Vehicle</a>
+                    <a href="/logout" class="text-[#8b949e] hover:text-[#f85149] transition-colors font-medium px-2 py-1">Logout</a>
                 </div>
             </nav>
         </header>
 
         <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-semibold text-white mb-2">Add a Vehicle</h1>
-            <p class="text-[#8b949e]">Keep your records tidy by logging each vehicle once.</p>
+        <div class="mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl font-semibold text-white mb-2">Add a Vehicle</h1>
+            <p class="text-sm sm:text-base text-[#8b949e]">Keep your records tidy by logging each vehicle once.</p>
         </div>
 
         <!-- Alert Messages -->
@@ -67,9 +88,9 @@
         {% endwith %}
 
         <!-- Form -->
-        <div class="border border-[#30363d] rounded-lg p-8 bg-[#161b22]">
+        <div class="border border-[#30363d] rounded-xl p-6 sm:p-8 bg-[#161b22] shadow-lg">
             <form method="POST" action="{{ url_for('add_vehicle') }}">
-                <div class="space-y-6">
+                <div class="space-y-5 sm:space-y-6">
                     <div>
                         <label for="brand" class="block text-sm font-medium text-white mb-2">Brand *</label>
                         <input 
@@ -81,7 +102,7 @@
                             required
                             autofocus
                             maxlength="100"
-                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                            class="w-full px-4 py-3 text-base bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all"
                         >
                     </div>
 
@@ -95,7 +116,7 @@
                             value="{{ model if model else '' }}"
                             required
                             maxlength="100"
-                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                            class="w-full px-4 py-3 text-base bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all"
                         >
                     </div>
 
@@ -110,7 +131,7 @@
                             min="1900"
                             max="2100"
                             required
-                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                            class="w-full px-4 py-3 text-base bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all"
                         >
                     </div>
 
@@ -124,15 +145,15 @@
                             value="{{ plate if plate else '' }}"
                             required
                             maxlength="50"
-                            class="w-full px-4 py-2 bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#c9d1d9] transition-colors"
+                            class="w-full px-4 py-3 text-base bg-[#0d1117] border border-[#30363d] rounded-lg text-white placeholder-[#8b949e] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all"
                         >
                     </div>
 
-                    <div class="flex items-center gap-4 pt-4">
-                        <button type="submit" class="px-6 py-2 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#c9d1d9] transition-colors text-sm" id="submitBtn">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
+                        <button type="submit" class="px-6 py-3 text-base bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#3b82f6] hover:text-white transition-all text-center" id="submitBtn">
                             Save Vehicle
                         </button>
-                        <a href="/vehicles" class="px-6 py-2 border border-[#30363d] text-white rounded-lg font-medium hover:border-[#c9d1d9] hover:bg-[#161b22] transition-colors text-sm">
+                        <a href="/vehicles" class="px-6 py-3 text-base border border-[#30363d] text-white rounded-lg font-medium hover:border-[#3b82f6] hover:text-[#3b82f6] hover:bg-[#161b22] transition-all text-center">
                             Cancel
                         </a>
                     </div>

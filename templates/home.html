@@ -30,88 +30,179 @@
     <link rel="manifest" href="{{ url_for('webmanifest') }}?v=2">
     <style>
         body {
-            background-color: #0d1117;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            background-attachment: fixed;
             color: #c9d1d9;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
         }
     </style>
 </head>
 <body class="bg-[#0d1117] text-[#c9d1d9] min-h-screen">
-    <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
         <!-- Header Navigation -->
-        <header class="mb-20">
-            <nav class="flex items-center justify-between">
-                <div class="text-xl font-semibold text-white">
+        <header class="mb-12 sm:mb-20">
+            <nav class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <a href="/" class="text-lg sm:text-xl font-semibold text-white">
                     AutoTrack
-                </div>
-                <div class="flex items-center gap-8">
-                    <a href="/" class="text-[#c9d1d9] hover:text-white transition-colors text-sm font-medium">Home</a>
-                    <a href="/vehicles" class="text-[#c9d1d9] hover:text-white transition-colors text-sm font-medium">Garage</a>
-                    <a href="/add_vehicle" class="text-[#c9d1d9] hover:text-white transition-colors text-sm font-medium">Add Vehicle</a>
+                </a>
+                <div class="flex flex-wrap items-center gap-3 sm:gap-6 text-sm sm:text-base">
+                    <a href="/" class="text-white hover:text-white transition-colors font-medium px-2 py-1">Home</a>
+                    {% if is_logged_in %}
+                        <a href="/dashboard" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Dashboard</a>
+                        <a href="/vehicles" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Garage</a>
+                        <a href="/add_vehicle" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Add Vehicle</a>
+                        <a href="/logout" class="text-[#8b949e] hover:text-[#f85149] transition-colors font-medium px-2 py-1">Logout</a>
+                    {% else %}
+                        <a href="/login" class="text-[#8b949e] hover:text-white transition-colors font-medium px-2 py-1">Login</a>
+                        <a href="/signup" class="px-4 py-2 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#3b82f6] hover:text-white transition-all text-sm">Sign Up</a>
+                    {% endif %}
                 </div>
             </nav>
         </header>
 
         <!-- Hero Section -->
-        <section class="text-center mb-24">
-            <h1 class="text-6xl font-bold text-white mb-4 tracking-tight">
+        <section class="text-center mb-12 sm:mb-24">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-3 sm:mb-4 tracking-tight">
                 AutoTrack
             </h1>
-            <p class="text-xl text-[#8b949e] mb-12 max-w-2xl mx-auto">
+            <p class="text-base sm:text-lg md:text-xl text-[#8b949e] mb-8 sm:mb-12 max-w-2xl mx-auto px-4">
                 Your Vehicle Maintenance Companion
             </p>
-            <div class="flex items-center justify-center gap-4">
-                <a href="/vehicles" class="px-6 py-3 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#c9d1d9] transition-colors text-sm">
-                    View Garage
-                </a>
-                <a href="/add_vehicle" class="px-6 py-3 border border-[#30363d] text-white rounded-lg font-medium hover:border-[#c9d1d9] hover:bg-[#161b22] transition-colors text-sm">
-                    Add Vehicle
-                </a>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 px-4">
+                {% if is_logged_in %}
+                    <a href="/dashboard" class="px-6 py-3 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#3b82f6] hover:text-white transition-all text-sm text-center">
+                        Go to Dashboard
+                    </a>
+                    <a href="/vehicles" class="px-6 py-3 border border-[#30363d] text-white rounded-lg font-medium hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all text-sm text-center">
+                        View Garage
+                    </a>
+                {% else %}
+                    <a href="/signup" class="px-6 py-3 bg-white text-[#0d1117] rounded-lg font-medium hover:bg-[#3b82f6] hover:text-white transition-all text-sm text-center">
+                        Get Started
+                    </a>
+                    <a href="/login" class="px-6 py-3 border border-[#30363d] text-white rounded-lg font-medium hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all text-sm text-center">
+                        Sign In
+                    </a>
+                {% endif %}
             </div>
         </section>
 
         <!-- Stats Section -->
         {% if total_vehicles > 0 %}
-        <section class="mb-24">
-            <div class="grid grid-cols-3 gap-6">
-                <div class="border border-[#30363d] rounded-lg p-6 bg-[#161b22]">
-                    <div class="text-4xl font-bold text-white mb-2">{{ total_vehicles }}</div>
-                    <div class="text-sm text-[#8b949e] uppercase tracking-wide">Vehicles</div>
+        <section class="mb-12 sm:mb-24">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                <div class="border border-[#30363d] rounded-xl p-4 sm:p-6 bg-[#161b22] stat-card shadow-lg">
+                    <div class="text-3xl sm:text-4xl font-bold text-white mb-2">{{ total_vehicles }}</div>
+                    <div class="text-xs sm:text-sm text-[#8b949e] uppercase tracking-wide">Vehicles</div>
                 </div>
-                <div class="border border-[#30363d] rounded-lg p-6 bg-[#161b22]">
-                    <div class="text-4xl font-bold text-white mb-2">{{ total_maintenance }}</div>
-                    <div class="text-sm text-[#8b949e] uppercase tracking-wide">Maintenance Records</div>
+                <div class="border border-[#30363d] rounded-xl p-4 sm:p-6 bg-[#161b22] stat-card shadow-lg">
+                    <div class="text-3xl sm:text-4xl font-bold text-white mb-2">{{ total_maintenance }}</div>
+                    <div class="text-xs sm:text-sm text-[#8b949e] uppercase tracking-wide">Maintenance Records</div>
                 </div>
-                <div class="border border-[#30363d] rounded-lg p-6 bg-[#161b22]">
-                    <div class="text-4xl font-bold text-white mb-2">${{ "%.2f"|format(total_cost) }}</div>
-                    <div class="text-sm text-[#8b949e] uppercase tracking-wide">Total Spent</div>
+                <div class="border border-[#30363d] rounded-xl p-4 sm:p-6 bg-[#161b22] stat-card shadow-lg">
+                    <div class="text-3xl sm:text-4xl font-bold text-white mb-2">${{ "%.2f"|format(total_cost) }}</div>
+                    <div class="text-xs sm:text-sm text-[#8b949e] uppercase tracking-wide">Total Spent</div>
                 </div>
             </div>
         </section>
         {% endif %}
 
         <!-- Why AutoTrack Section -->
-        <section class="max-w-2xl mx-auto">
-            <h2 class="text-2xl font-semibold text-white mb-8 text-center">Why AutoTrack</h2>
-            <div class="space-y-4 text-[#8b949e]">
-                <div class="flex items-start">
-                    <span class="text-[#30363d] mr-4">•</span>
-                    <p>Track all your vehicles and their maintenance history in one centralized location</p>
-                </div>
-                <div class="flex items-start">
-                    <span class="text-[#30363d] mr-4">•</span>
-                    <p>Never miss an oil change or service appointment with comprehensive maintenance logging</p>
-                </div>
-                <div class="flex items-start">
-                    <span class="text-[#30363d] mr-4">•</span>
-                    <p>Monitor maintenance costs per vehicle to better understand your spending patterns</p>
-                </div>
-                <div class="flex items-start">
-                    <span class="text-[#30363d] mr-4">•</span>
-                    <p>Quick search functionality to find vehicles instantly by brand, model, or plate number</p>
-                </div>
-                <div class="flex items-start">
-                    <span class="text-[#30363d] mr-4">•</span>
-                    <p>Export your data to CSV format for backup and record-keeping purposes</p>
+        <section class="w-full -mx-4 sm:-mx-6 px-4 sm:px-6 py-10 sm:py-12 bg-[#161b22] border-t border-b border-[#30363d]">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">Why AutoTrack</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="flex flex-col gap-3 p-5 bg-[#0d1117] rounded-xl border border-[#30363d] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#3b82f6]/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Centralized Tracking</h3>
+                            <p class="text-sm sm:text-base text-[#8b949e] leading-relaxed">Track all your vehicles and their maintenance history in one centralized location</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3 p-5 bg-[#0d1117] rounded-xl border border-[#30363d] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#3b82f6]/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Never Miss Maintenance</h3>
+                            <p class="text-sm sm:text-base text-[#8b949e] leading-relaxed">Never miss an oil change or service appointment with comprehensive maintenance logging</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3 p-5 bg-[#0d1117] rounded-xl border border-[#30363d] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#3b82f6]/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Cost Monitoring</h3>
+                            <p class="text-sm sm:text-base text-[#8b949e] leading-relaxed">Monitor maintenance costs per vehicle to better understand your spending patterns</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3 p-5 bg-[#0d1117] rounded-xl border border-[#30363d] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#3b82f6]/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Quick Search</h3>
+                            <p class="text-sm sm:text-base text-[#8b949e] leading-relaxed">Quick search functionality to find vehicles instantly by brand, model, or plate number</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3 p-5 bg-[#0d1117] rounded-xl border border-[#30363d] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#3b82f6]/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Data Export</h3>
+                            <p class="text-sm sm:text-base text-[#8b949e] leading-relaxed">Export your data to CSV format for backup and record-keeping purposes</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3 p-5 bg-[#0d1117] rounded-xl border border-[#30363d] hover:border-[#3b82f6] hover:shadow-lg transition-all duration-300 h-full">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-[#3b82f6]/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-base sm:text-lg font-semibold text-white mb-2">Secure & Private</h3>
+                            <p class="text-sm sm:text-base text-[#8b949e] leading-relaxed">Your data is secure with user authentication and each user only sees their own vehicles</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
