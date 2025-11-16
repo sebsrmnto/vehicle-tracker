@@ -3,12 +3,19 @@ from db_config import get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import csv
+import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from functools import wraps
 
 # Load environment variables
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 app = Flask(__name__)
 # Use environment variable for secret key, fallback to default for local development
@@ -226,9 +233,18 @@ def signup():
             return redirect(url_for('dashboard'))
         except Exception as e:
             if conn:
-                conn.rollback()
-            app.logger.error(f'Error in signup: {str(e)}')
-            flash('An error occurred while creating your account. Please try again.', 'error')
+                try:
+                    conn.rollback()
+                except:
+                    pass
+            error_msg = str(e)
+            app.logger.error(f'Error in signup: {error_msg}', exc_info=True)
+            
+            # Check if it's a database connection error
+            if 'connection' in error_msg.lower() or 'mysql' in error_msg.lower() or 'database' in error_msg.lower():
+                flash('Database connection error. Please try again in a moment.', 'error')
+            else:
+                flash('An error occurred while creating your account. Please try again.', 'error')
             return render_template('signup.html', email=email)
         finally:
             if conn:
@@ -280,8 +296,14 @@ def login():
             flash('Logged in successfully!', 'success')
             return redirect(url_for('dashboard'))
         except Exception as e:
-            app.logger.error(f'Error in login: {str(e)}')
-            flash('An error occurred while logging in. Please try again.', 'error')
+            error_msg = str(e)
+            app.logger.error(f'Error in login: {error_msg}', exc_info=True)
+            
+            # Check if it's a database connection error
+            if 'connection' in error_msg.lower() or 'mysql' in error_msg.lower() or 'database' in error_msg.lower():
+                flash('Database connection error. Please try again in a moment.', 'error')
+            else:
+                flash('An error occurred while logging in. Please try again.', 'error')
             return render_template('login.html', email=email)
         finally:
             if conn:

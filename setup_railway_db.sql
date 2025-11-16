@@ -1,15 +1,8 @@
--- Vehicle Tracker Database Setup
--- Run this script to create the database and tables
--- This script works for both local development and Railway production
+-- Railway Database Setup Script
+-- This script creates all required tables for AutoTrack on Railway
+-- Run this using Railway CLI or MySQL client
 
--- Note: On Railway, the database already exists, so you can skip the CREATE DATABASE line
--- Just run the table creation statements below
-
--- Create the database (if it doesn't exist) - Skip this on Railway
--- CREATE DATABASE IF NOT EXISTS vehicle_tracker_db;
--- USE vehicle_tracker_db;
-
--- Create users table (REQUIRED - was missing!)
+-- Create users table (REQUIRED for authentication)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -43,11 +36,6 @@ CREATE TABLE IF NOT EXISTS maintenance_logs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Show the table structure (optional - to verify)
-DESCRIBE users;
-DESCRIBE vehicles;
-DESCRIBE maintenance_logs;
-
--- Show message
-SELECT 'Database and tables created successfully!' AS message;
+-- Verify tables were created
+SELECT 'Database setup complete! Tables created: users, vehicles, maintenance_logs' AS message;
 
