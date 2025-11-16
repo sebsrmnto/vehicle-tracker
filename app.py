@@ -23,6 +23,17 @@ app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-change-me-in-production')
 # Set permanent session lifetime (30 days for "remember me" functionality)
 app.permanent_session_lifetime = timedelta(days=30)
 
+# Configure session cookies
+# Secure cookies are required for HTTPS (production), but break on HTTP (local dev)
+# We'll set this dynamically based on the request in a before_request handler
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access (always safe)
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # CSRF protection (always safe)
+
+# Set secure cookies only when running behind a proxy (Railway uses HTTPS)
+# Railway sets PORT environment variable, and we're behind a proxy
+if os.getenv('PORT'):  # Railway sets this
+    app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
+
 # Validation functions
 def validate_vehicle_data(brand, model, year, plate):
     """Validate vehicle form data"""
@@ -732,6 +743,146 @@ def export_csv():
     finally:
         if conn:
             conn.close()
+
+@app.route('/test-db')
+def test_db():
+    """
+    Diagnostic endpoint to test database connection and configuration.
+    Visit this URL to check if database is properly configured.
+    """
+    results = {
+        'database_connection': '❌ Failed',
+        'tables_exist': [],
+        'environment_variables': {},
+        'errors': []
+    }
+    
+    # Check environment variables (mask sensitive data)
+    env_vars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'DB_PORT', 'SECRET_KEY']
+    for var in env_vars:
+        value = os.getenv(var)
+        if value:
+            if 'PASSWORD' in var or 'SECRET' in var:
+                results['environment_variables'][var] = '***SET***' if value else '❌ NOT SET'
+            else:
+                results['environment_variables'][var] = value
+        else:
+            results['environment_variables'][var] = '❌ NOT SET'
+    
+    # Test database connection
+    conn = None
+    try:
+        conn = get_db_connection()
+        results['database_connection'] = '✅ Connected'
+        
+        # Check which tables exist
+        cursor = conn.cursor()
+        cursor.execute("SHOW TABLES")
+        tables = cursor.fetchall()
+        table_names = [table[0] for table in tables] if tables else []
+        
+        # Check for required tables
+        required_tables = ['users', 'vehicles', 'maintenance_logs']
+        for table in required_tables:
+            if table in table_names:
+                results['tables_exist'].append(f'✅ {table}')
+            else:
+                results['tables_exist'].append(f'❌ {table} (MISSING!)')
+                results['errors'].append(f'Table "{table}" does not exist. Run setup_database.sql')
+        
+        # Check users table structure
+        if 'users' in table_names:
+            cursor.execute("DESCRIBE users")
+            columns = cursor.fetchall()
+            column_names = [col[0] for col in columns]
+            if 'password_hash' not in column_names:
+                results['errors'].append('users table missing "password_hash" column')
+            if 'email' not in column_names:
+                results['errors'].append('users table missing "email" column')
+        
+        cursor.close()
+        
+    except Exception as e:
+        error_msg = str(e)
+        results['database_connection'] = f'❌ Failed: {error_msg}'
+        results['errors'].append(f'Database connection error: {error_msg}')
+        app.logger.error(f'Database test failed: {error_msg}', exc_info=True)
+    finally:
+        if conn:
+            conn.close()
+    
+    # Generate HTML response
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Database Diagnostic Test</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; background: #1a1a1a; color: #fff; }}
+            h1 {{ color: #4CAF50; }}
+            h2 {{ color: #2196F3; margin-top: 30px; }}
+            .success {{ color: #4CAF50; }}
+            .error {{ color: #f44336; }}
+            .info {{ background: #2a2a2a; padding: 15px; border-radius: 5px; margin: 10px 0; }}
+            ul {{ list-style: none; padding: 0; }}
+            li {{ padding: 5px 0; }}
+            a {{ color: #2196F3; }}
+        </style>
+    </head>
+    <body>
+        <h1>🔍 Database Diagnostic Test</h1>
+        
+        <div class="info">
+            <h2>Database Connection</h2>
+            <p><strong>{results['database_connection']}</strong></p>
+        </div>
+        
+        <div class="info">
+            <h2>Environment Variables</h2>
+            <ul>
+    """
+    for var, value in results['environment_variables'].items():
+        html += f"<li><strong>{var}:</strong> {value}</li>"
+    
+    html += """
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h2>Database Tables</h2>
+            <ul>
+    """
+    for table_status in results['tables_exist']:
+        html += f"<li>{table_status}</li>"
+    
+    html += """
+            </ul>
+        </div>
+    """
+    
+    if results['errors']:
+        html += """
+        <div class="info" style="background: #3a1a1a; border-left: 4px solid #f44336;">
+            <h2 class="error">⚠️ Issues Found</h2>
+            <ul>
+        """
+        for error in results['errors']:
+            html += f"<li class='error'>{error}</li>"
+        html += """
+            </ul>
+        </div>
+        """
+    
+    html += """
+        <div class="info">
+            <p><a href="/">← Back to Home</a></p>
+            <p><small>This diagnostic page helps troubleshoot database connection issues.</small></p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return html
 
 if __name__ == '__main__':
     # Use environment variable for debug mode, default to False for production
